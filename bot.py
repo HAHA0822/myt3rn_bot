@@ -83,9 +83,9 @@ def send_bridge_transaction(web3, account, my_address, network_name, choice_brid
     # value_in_ether = 0.1
     value_in_ether = round(random.uniform(0.11, 0.15), 4)
     value_in_wei = web3.to_wei(value_in_ether, 'ether')
-    value_min = web3.to_wei(value_in_ether*0.999999, 'ether')
+    value_min = web3.to_wei(value_in_ether*round(random.uniform(0.9999, 0.999928), 6), 'ether')
 
-    data = calculate_bridge_data(web3, account.address, value_min, network_name, choice_bridge)
+    data = calculate_bridge_data(web3, account.address, value_min, value_in_wei, network_name, choice_bridge)
 
     # 获取账户余额
     balance = web3.eth.get_balance(my_address)
@@ -110,8 +110,6 @@ def send_bridge_transaction(web3, account, my_address, network_name, choice_brid
     base_fee = web3.eth.get_block('latest')['baseFeePerGas']
     priority_fee = web3.to_wei(5, 'gwei')
     max_fee = base_fee + priority_fee
-
-    data = calculate_bridge_data(web3, account.address, value_in_wei, max_fee+value_in_wei, network_name, choice_bridge)
 
     transaction = {
         'nonce': nonce,
