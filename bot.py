@@ -83,8 +83,9 @@ def send_bridge_transaction(web3, account, my_address, network_name, choice_brid
     # value_in_ether = 0.1
     value_in_ether = round(random.uniform(0.11, 0.15), 4)
     value_in_wei = web3.to_wei(value_in_ether, 'ether')
+    value_min = web3.to_wei(value_in_ether*0.999999, 'ether')
 
-    data = calculate_bridge_data(web3, account.address, value_in_wei, network_name, choice_bridge)
+    data = calculate_bridge_data(web3, account.address, value_min, network_name, choice_bridge)
 
     # 获取账户余额
     balance = web3.eth.get_balance(my_address)
@@ -109,6 +110,8 @@ def send_bridge_transaction(web3, account, my_address, network_name, choice_brid
     base_fee = web3.eth.get_block('latest')['baseFeePerGas']
     priority_fee = web3.to_wei(5, 'gwei')
     max_fee = base_fee + priority_fee
+
+    data = calculate_bridge_data(web3, account.address, value_in_wei, max_fee+value_in_wei, network_name, choice_bridge)
 
     transaction = {
         'nonce': nonce,
@@ -198,7 +201,7 @@ def display_menu():
     choice = input("Masukkan pilihan (1-5): ")
     return choice
 
-def calculate_bridge_data(web3, sender, amountin, network_name, choice_bridge):
+def calculate_bridge_data(web3, sender, amountin, totalbridge, network_name, choice_bridge):
     # 初始化 Web3
     # web3 = Web3(Web3.HTTPProvider('YOUR_INFURA_OR_ALCHEMY_URL'))
 
@@ -243,7 +246,7 @@ def calculate_bridge_data(web3, sender, amountin, network_name, choice_bridge):
 
 
     amountzero = 0
-    totalbridge = amountin
+    # totalbridge = amountin
     bridgedmin = web3.from_wei(amountin, 'ether')  # 根据需要转换单位
     
     # 编码参数
