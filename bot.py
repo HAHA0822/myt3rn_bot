@@ -179,7 +179,7 @@ def process_network_transactions(network_name, bridges, chain_data, successful_t
 
             print(f"{'='*150}", flush=True)
             print("\n", flush=True)
-        delay = random.randint(1, 60)
+        delay = random.randint(10, 60)
         print(f"发送成功，休息{30+delay}秒\n", flush=True)
         time.sleep(30+delay)
         
@@ -273,12 +273,16 @@ def main():
     # print("\n\n")
 
     successful_txs = 0
+    # delay = round(random.uniform(0, 4), 2)
+    # print(f"休息 {delay} 小时...", flush=True)
+    # time.sleep((delay) * 3600)
 
     while True:
         start_time = time.time()
+        delay = round(random.uniform(0, 2), 2)
 
         # 进行跨链操作，持续两个小时
-        while time.time() - start_time < 3 * 3600:  # 2小时
+        while time.time() - start_time < (3 + delay) * 3600:  # 2小时
             # choice = display_menu()
             # 生成一个随机选择，范围在 1 到 4 之间
             choice = random.randint(1, 4)
@@ -308,9 +312,10 @@ def main():
                 print(f"Error occurred: {e}", flush=True)
                 sys.exit(1)
         
-        # 休息12个小时
-        print("休息 9 小时...", flush=True)
-        time.sleep(9 * 3600)
+        # 休息
+        delay = round(random.uniform(0, 2), 2)
+        print(f"休息 {8+delay} 小时...", flush=True)
+        time.sleep((8+delay) * 3600)
 
 if __name__ == "__main__":
     main()
