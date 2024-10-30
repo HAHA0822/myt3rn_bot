@@ -19,7 +19,7 @@ start_python_script() {
 
 # 功能：查看日志
 view_logs() {
-    pm2 logs t3rn_bot --lines 500 
+    pm2 logs t3rn_bot --lines 50 
 }
 
 # 主菜单
