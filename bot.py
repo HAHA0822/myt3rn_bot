@@ -14,7 +14,11 @@ from network_config import networks
 
 # 从环境变量中获取私钥
 private_keys = [
-    os.getenv('MY_PRIVATE_KEY')  # 环境变量名应根据你的设置而定
+    os.getenv('MY_PRIVATE_KEY1'),  # 环境变量名应根据你的设置而定
+    os.getenv('MY_PRIVATE_KEY2'),
+    os.getenv('MY_PRIVATE_KEY3'),
+    os.getenv('MY_PRIVATE_KEY4'),
+    os.getenv('MY_PRIVATE_KEY5')
 ]
 
 # 从环境变量中获取地址
@@ -23,7 +27,11 @@ my_addresses = [
 ]
 
 labels = [
-    'Wallet 1'
+    'Wallet 1',
+    'Wallet 2',
+    'Wallet 3',
+    'Wallet 4',
+    'Wallet 5'
 ]
 
 # Fungsi untuk memusatkan teks
@@ -81,9 +89,9 @@ def get_brn_balance(web3, my_address):
 def send_bridge_transaction(web3, account, my_address, network_name, choice_bridge):
     nonce = web3.eth.get_transaction_count(my_address, 'pending')
     # value_in_ether = 0.1
-    value_in_ether = round(random.uniform(0.11, 0.15), 4)
+    value_in_ether = round(random.uniform(0.101, 0.15), 4)
     value_in_wei = web3.to_wei(value_in_ether, 'ether')
-    value_min = web3.to_wei(value_in_ether*round(random.uniform(0.9999, 0.999928), 6), 'ether')
+    value_min = web3.to_wei(value_in_ether*round(random.uniform(0.99991, 0.999927), 6), 'ether')
 
     data = calculate_bridge_data(web3, account.address, value_min, value_in_wei, network_name, choice_bridge)
 
@@ -154,34 +162,38 @@ def send_bridge_transaction(web3, account, my_address, network_name, choice_brid
         return None, None
 
 # Fungsi untuk memproses transaksi pada jaringan tertentu
-def process_network_transactions(network_name, bridges, chain_data, successful_txs):
+def process_network_transactions(network_name, choiced_account, bridges, chain_data, successful_txs):
     web3 = Web3(Web3.HTTPProvider(chain_data['rpc_url']))
     if not web3.is_connected():
         print(f"无法连接到 {network_name}", flush=True)
         return
 
     choice_bridge = random.randint(0, 2)
+    # choice_account = random.randint(0, 5)
 
     bridge = bridges[choice_bridge]
-    for i, private_key in enumerate(private_keys):
-        account = Account.from_key(private_key)
-        # data = data_bridge[bridge]
-        result = send_bridge_transaction(web3, account, account.address, network_name, choice_bridge)
-        if result:
-            tx_hash, value_sent = result
-            successful_txs += 1
+    # for i, private_key in enumerate(private_keys):
+    private_key = private_keys[choiced_account]
+    i =  choiced_account
 
-            # Check if value_sent is valid before formatting
-            if value_sent is not None:
-                print(f"{chain_symbols[network_name]} Total Tx Sukses: {successful_txs} | {labels[i]} | Bridge: {bridge} | Jumlah Bridge: {value_sent:.5f} ETH {reset_color}\n", flush=True)
-            else:
-                print(f"{chain_symbols[network_name]} Total Tx Sukses: {successful_txs} | {labels[i]} | Bridge: {bridge} {reset_color}\n", flush=True)
+    account = Account.from_key(private_key)
+    # data = data_bridge[bridge]
+    result = send_bridge_transaction(web3, account, account.address, network_name, choice_bridge)
+    if result:
+        tx_hash, value_sent = result
+        successful_txs += 1
 
-            print(f"{'='*150}", flush=True)
-            print("\n", flush=True)
-        delay = random.randint(10, 60)
-        print(f"发送成功，休息{30+delay}秒\n", flush=True)
-        time.sleep(30+delay)
+        # Check if value_sent is valid before formatting
+        if value_sent is not None:
+            print(f"{chain_symbols[network_name]} Total Tx Sukses: {successful_txs} | {labels[i]} | Bridge: {bridge} | Jumlah Bridge: {value_sent:.5f} ETH {reset_color}\n", flush=True)
+        else:
+            print(f"{chain_symbols[network_name]} Total Tx Sukses: {successful_txs} | {labels[i]} | Bridge: {bridge} {reset_color}\n", flush=True)
+
+        print(f"{'='*150}", flush=True)
+        print("\n", flush=True)
+        delay = random.randint(1, 20)
+        print(f"发送成功，休息{20+delay}秒\n", flush=True)
+        time.sleep(20 + delay)
         
 
     return successful_txs
@@ -273,16 +285,19 @@ def main():
     # print("\n\n")
 
     successful_txs = 0
+    choiced_account = 3
     # delay = round(random.uniform(0, 4), 2)
     # print(f"休息 {delay} 小时...", flush=True)
     # time.sleep((delay) * 3600)
 
     while True:
         start_time = time.time()
-        delay = round(random.uniform(0, 2), 2)
+        delay = round(random.uniform(0, 1), 2)
+
+        choiced_account = (choiced_account + 1) % 4
 
         # 进行跨链操作，持续两个小时
-        while time.time() - start_time < (3 + delay) * 3600:  # 2小时
+        while time.time() - start_time < (2 + delay) * 3600:  # 2小时
             # choice = display_menu()
             # 生成一个随机选择，范围在 1 到 4 之间
             choice = random.randint(1, 4)
@@ -294,13 +309,13 @@ def main():
 
             try:
                 if choice == 1:
-                    successful_txs = process_network_transactions('Arbitrum Sepolia', ["ARB - BASE", "ARB - OP SEPOLIA", "ARB - BLAST"], networks['Arbitrum Sepolia'], successful_txs)
+                    successful_txs = process_network_transactions('Arbitrum Sepolia', choiced_account, ["ARB - BASE", "ARB - OP SEPOLIA", "ARB - BLAST"], networks['Arbitrum Sepolia'], successful_txs)
                 elif choice == 2:
-                    successful_txs = process_network_transactions('OP Sepolia', ["OP - BLAST", "OP - ARB", "OP - BASE"], networks['OP Sepolia'], successful_txs)
+                    successful_txs = process_network_transactions('OP Sepolia', choiced_account, ["OP - BLAST", "OP - ARB", "OP - BASE"], networks['OP Sepolia'], successful_txs)
                 elif choice == 3:
-                    successful_txs = process_network_transactions('Blast Sepolia', ["BLAST - OP", "BLAST - ARB", "BLAST - BASE"], networks['Blast Sepolia'], successful_txs)
+                    successful_txs = process_network_transactions('Blast Sepolia', choiced_account, ["BLAST - OP", "BLAST - ARB", "BLAST - BASE"], networks['Blast Sepolia'], successful_txs)
                 elif choice == 4:
-                    successful_txs = process_network_transactions('Base Sepolia', ["BASE - OP", "BASE - ARB", "BASE - BLAST"], networks['Base Sepolia'], successful_txs)
+                    successful_txs = process_network_transactions('Base Sepolia', choiced_account, ["BASE - OP", "BASE - ARB", "BASE - BLAST"], networks['Base Sepolia'], successful_txs)
                 else:
                     print("Pilihan tidak valid. Silakan coba lagi.", flush=True)
 
@@ -313,9 +328,9 @@ def main():
                 sys.exit(1)
         
         # 休息
-        delay = round(random.uniform(0, 2), 2)
-        print(f"休息 {8+delay} 小时...", flush=True)
-        time.sleep((8+delay) * 3600)
+        delay = round(random.uniform(0, 0.5), 2)
+        print(f"休息 {delay*60} 分钟...", flush=True)
+        time.sleep((delay) * 3600)
 
 if __name__ == "__main__":
     main()

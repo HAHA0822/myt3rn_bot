@@ -1,10 +1,30 @@
 #!/bin/bash
 
+# 功能：安装 Python 和 pip
+install_python() {
+    echo "正在检查 Python 和 pip 是否安装..."
+    if command -v python3 &>/dev/null; then
+        echo "Python 3 已安装。"
+    else
+        echo "Python 3 未安装，正在安装..."
+        sudo apt update
+        sudo apt install -y python3 python3-pip
+    fi
+}
+
+
 # 功能：设置环境变量
 setup_environment() {
-    read -p "请输入您的私钥 / Enter your private key: " PRIVATE_KEY
-    # read -p "请输入您的地址 / Enter your address: " ADDRESS
-    export MY_PRIVATE_KEY=$PRIVATE_KEY
+    read -p "请输入您的第一个私钥 / Enter your private key: " PRIVATE_KEY1
+    export MY_PRIVATE_KEY1=$PRIVATE_KEY1
+    read -p "请输入您的第二个私钥 / Enter your private key: " PRIVATE_KEY2
+    export MY_PRIVATE_KEY2=$PRIVATE_KEY2
+    read -p "请输入您的第三个私钥 / Enter your private key: " PRIVATE_KEY3
+    export MY_PRIVATE_KEY3=$PRIVATE_KEY3
+    read -p "请输入您的第四个私钥 / Enter your private key: " PRIVATE_KEY4
+    export MY_PRIVATE_KEY4=$PRIVATE_KEY4
+    read -p "请输入您的第五个私钥 / Enter your private key: " PRIVATE_KEY5
+    export MY_PRIVATE_KEY5=$PRIVATE_KEY5
     # export MY_ADDRESS=$ADDRESS
     echo "私钥已设置为环境变量 MY_PRIVATE_KEY。"
 }
@@ -59,6 +79,8 @@ main_menu() {
 
 # 要检查的库
 packages=("web3" "colorama")
+
+install_python  # 调用安装 Python 函数
 
 for package in "${packages[@]}"; do
     if python -c "import $package" &> /dev/null; then
